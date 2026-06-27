@@ -8,13 +8,15 @@ export function HBAuthProvider({ children }) {
   const [token, setToken] = useState(() => authService.getStoredToken())
   const [user, setUser] = useState(() => authService.getStoredUser())
 
-  const login = useCallback(async (username, password) => {
-    const { token: newToken, user: newUser } = await authService.login(username, password)
-    authService.saveSession(newToken, newUser)
-    setToken(newToken)
-    setUser(newUser)
-    return newUser
-  }, [])
+const login = useCallback(async (data) => {
+  const { token: newToken, user: newUser } =
+    await authService.login(data.numerodni, data.password)
+
+  authService.saveSession(newToken, newUser)
+  setToken(newToken)
+  setUser(newUser)
+  return newUser
+}, [])
 
   const logout = useCallback(() => {
     authService.clearSession()

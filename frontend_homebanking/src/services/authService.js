@@ -6,15 +6,21 @@ import hbApi, { TOKEN_KEY, USER_KEY } from './hb_api.js'
  *   -> { access_token, token_type, expires_in_min, cliente: { codcliente, nombre, pkcliente } }
  * Devuelve { token, user } ya normalizado.
  */
-export async function login(username, password) {
-  const { data } = await hbApi.post('/auth/login', { username, password })
+export async function login(numerodni, password) {
+  const { data } = await hbApi.post('/auth/login', {
+    numerodni,
+    password
+  })
+
   const token = data.access_token
   const cliente = data.cliente || {}
+
   const user = {
-    codcliente: cliente.codcliente ?? username,
-    nombre: cliente.nombre ?? username,
+    codcliente: cliente.codcliente ?? numerodni,
+    nombre: cliente.nombre ?? numerodni,
     pkcliente: cliente.pkcliente,
   }
+
   return { token, user }
 }
 
