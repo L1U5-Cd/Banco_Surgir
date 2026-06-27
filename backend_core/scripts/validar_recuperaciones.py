@@ -11,7 +11,6 @@ try:
 except Exception:
     pass
 
-BASE = "http://localhost:8001"
 USERS = {
     "asesor": "11111111", "administrador": "11111112",
     "comite": "11111115", "gerencia": None,

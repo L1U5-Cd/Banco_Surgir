@@ -6,7 +6,6 @@ Uso:  ./venv/Scripts/python.exe scripts/validar_core.py
 import sys
 import httpx
 
-BASE = "http://localhost:8001"
 USERS = {
     "asesor":        "11111111",
     "administrador": "11111112",

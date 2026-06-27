@@ -13,12 +13,14 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # React Vite frontend
+    allow_origins=[
+        "http://localhost:5173",  # desarrollo local (opcional)
+        "https://banco-surgir.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 app.include_router(rtr_auth.router,      prefix="/auth",      tags=["Auth"])
 app.include_router(rtr_scoring.router,   prefix="/scoring",   tags=["Scoring"])
 app.include_router(rtr_creditos.router,  prefix="/creditos",  tags=["Créditos"])

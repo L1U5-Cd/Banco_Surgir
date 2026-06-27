@@ -5,7 +5,7 @@ import axios from 'axios'
  * pasan por aquí. Inyecta el JWT desde localStorage en cada request.
  */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL || 'http://localhost:8001',
+  baseURL: import.meta.env.VITE_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 })
 
