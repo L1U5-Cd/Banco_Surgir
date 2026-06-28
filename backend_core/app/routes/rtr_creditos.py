@@ -131,12 +131,16 @@ def cronograma_solicitud(
     db: Session = Depends(get_db),
     user: dict = Depends(get_current_user),
 ):
-    """Actividad 45: plan de pagos referencial."""
+    rol = user.get("rol", "")
+    if rol not in ("asesor", "comite", "administrador", "gerencia"):
+        raise HTTPException(
+            status_code=403,
+            detail=f"El rol '{rol}' no está autorizado para ver el cronograma"
+        )
     res = ctl_creditos.generar_cronograma(db, codsolicitud)
     if res.get("error"):
         raise HTTPException(status_code=400, detail=res["error"])
     return res
-
 
 @router.post("/solicitudes/{codsolicitud}/ingresos")
 def registrar_ingresos(
