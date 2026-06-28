@@ -291,7 +291,7 @@ def generar_cronograma(db: Session, codsolicitud: str) -> dict:
     cuota = monto * tem * (1 + tem) ** plazo / ((1 + tem) ** plazo - 1) if tem > 0 else monto / plazo
 
     # Fecha base: fecha de aprobación o hoy si no está registrada
-    fecha_aprobacion = sol.fecultactualizacion or date.today()
+    fecha_aprobacion = date.today()
     if hasattr(fecha_aprobacion, "date"):
         fecha_aprobacion = fecha_aprobacion.date()
 
