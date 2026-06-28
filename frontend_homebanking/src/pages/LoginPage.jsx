@@ -33,10 +33,10 @@ export default function LoginPage() {
     }
 
     setLoading(true)
-    try {
+        try {
       // El backend autentica con la tarjeta/usuario (codcliente) + la clave.
       await login({
-        numerodni: dni.trim(),
+        numerodni: tarjeta.trim(),  // ← cambia dni.trim() por tarjeta.trim()
         password: password
       })
       navigate('/inicio', { replace: true })
