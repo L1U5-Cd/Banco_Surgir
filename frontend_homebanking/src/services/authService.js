@@ -8,7 +8,7 @@ import hbApi, { TOKEN_KEY, USER_KEY } from './hb_api.js'
  */
 export async function login(numerodni, password) {
   const { data } = await hbApi.post('/auth/login', {
-    numerodni,
+    username: numerodni,  // ← este es el único cambio
     password
   })
 
