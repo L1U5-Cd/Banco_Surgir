@@ -198,30 +198,35 @@ def enviar_a_comite(db: Session, codsolicitud: str, pkcomite: int | None = None)
 
 def resolver(db: Session, codsolicitud: str, *, decision: str,
              motivo: str = "", monto_aprobado: float | None = None) -> dict:
-    """
-    Actividad 42-43: resolución del Comité.
-    decision: 'APROBADO' | 'DENEGADO_TEMPORAL' | 'DENEGADO_DEFINITIVO'.
-    """
     sol = repsol.obtener(db, codsolicitud)
     if not sol:
         return {"error": "Solicitud no encontrada"}
 
     if decision == "APROBADO":
         monto = monto_aprobado if monto_aprobado is not None else float(sol.montosolicitudcredito or 0)
-        repsol.cambiar_estado(db, codsolicitud, repsol.ESTADO_APROBADO,
-                              motivo=motivo or "Aprobado por Comité",
-                              monto_aprobado=monto)
-        sol_aprobada = repsol.obtener(db, codsolicitud)
-        res = rep_evaluacion.desembolsar(db, sol_aprobada)
-        repsol.cambiar_estado(db, codsolicitud, repsol.ESTADO_DESEMBOLSADO,
-                              motivo="Aprobado y desembolsado via core")
-        return {"codsolicitud": codsolicitud, "estado": "Desembolsado",
-                "monto_aprobado": monto, **res}
+        repsol.cambiar_estado(
+            db, codsolicitud, repsol.ESTADO_APROBADO,
+            motivo=motivo or "Aprobado por Comité",
+            monto_aprobado=monto
+        )
+        # ← YA NO desembolsa aquí. El asesor lo hará desde el endpoint /desembolsar
+        return {
+            "codsolicitud": codsolicitud,
+            "estado": "Aprobado",
+            "monto_aprobado": monto,
+            "mensaje": "Solicitud aprobada. El asesor puede proceder con el desembolso."
+        }
     else:
-        repsol.cambiar_estado(db, codsolicitud, repsol.ESTADO_RECHAZADO,
-                              motivo=f"{decision}: {motivo}")
-        return {"codsolicitud": codsolicitud, "estado": "Rechazado",
-                "decision": decision, "motivo": motivo}
+        repsol.cambiar_estado(
+            db, codsolicitud, repsol.ESTADO_RECHAZADO,
+            motivo=f"{decision}: {motivo}"
+        )
+        return {
+            "codsolicitud": codsolicitud,
+            "estado": "Rechazado",
+            "decision": decision,
+            "motivo": motivo
+        }
 
 
 def registrar_ingreso(db: Session, codsolicitud: str, *, tipo: str, monto: float,

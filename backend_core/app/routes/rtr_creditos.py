@@ -173,7 +173,7 @@ def registrar_evaluacion(
 def desembolsar(
     codsolicitud: str,
     db: Session = Depends(get_db),
-    user: dict = Depends(requiere_rol("resolver_comite")),
+    user: dict = Depends(requiere_rol("crear_solicitud")),  # ← asesor puede desembolsar
 ):
     """Actividades 45-48: desembolsa una solicitud aprobada (crea cuenta + movimiento)."""
     res = ctl_creditos.desembolsar(db, codsolicitud)
