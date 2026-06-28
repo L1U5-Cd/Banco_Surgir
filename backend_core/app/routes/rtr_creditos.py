@@ -177,14 +177,18 @@ def registrar_evaluacion(
 def desembolsar(
     codsolicitud: str,
     db: Session = Depends(get_db),
-    user: dict = Depends(requiere_rol("crear_solicitud")),  # ← asesor puede desembolsar
+    user: dict = Depends(get_current_user),  # ← cualquier usuario autenticado
 ):
-    """Actividades 45-48: desembolsa una solicitud aprobada (crea cuenta + movimiento)."""
+    rol = user.get("rol", "")
+    if rol not in ("asesor", "comite", "administrador", "gerencia"):
+        raise HTTPException(
+            status_code=403,
+            detail=f"El rol '{rol}' no está autorizado para desembolsar"
+        )
     res = ctl_creditos.desembolsar(db, codsolicitud)
     if res.get("error"):
         raise HTTPException(status_code=400, detail=res["error"])
     return res
-
 
 # ───────────────────────── Catálogo de productos ─────────────────────────────
 
