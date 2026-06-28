@@ -6,6 +6,8 @@ por monto/endeudamiento (act.22) -> opiniones (act.23-36) -> comité (act.41) ->
 resolución (act.42-43) -> cronograma referencial (act.45).
 """
 from sqlalchemy.orm import Session
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 from app.controllers import ctl_scoring
 from app.repositories import rep_clientes, rep_solicitudes as repsol, rep_evaluacion
@@ -270,11 +272,10 @@ def desembolsar(db: Session, codsolicitud: str) -> dict:
     return {"codsolicitud": codsolicitud, "estado": "Desembolsado", **res}
 
 
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
 def generar_cronograma(db: Session, codsolicitud: str) -> dict:
-    """
-    Actividad 45: plan de pagos referencial (cuota fija francesa) a partir
-    del monto aprobado y la TEA sugerida por el scoring del tipo de crédito.
-    """
     sol = repsol.obtener(db, codsolicitud)
     if not sol:
         return {"error": "Solicitud no encontrada"}
@@ -289,14 +290,21 @@ def generar_cronograma(db: Session, codsolicitud: str) -> dict:
     tem = (1 + tea / 100) ** (1 / 12) - 1
     cuota = monto * tem * (1 + tem) ** plazo / ((1 + tem) ** plazo - 1) if tem > 0 else monto / plazo
 
+    # Fecha base: fecha de aprobación o hoy si no está registrada
+    fecha_aprobacion = sol.fecultactualizacion or date.today()
+    if hasattr(fecha_aprobacion, "date"):
+        fecha_aprobacion = fecha_aprobacion.date()
+
     saldo = monto
     cuotas = []
     for n in range(1, plazo + 1):
         interes = saldo * tem
         capital = cuota - interes
         saldo = max(0.0, saldo - capital)
+        vencimiento = fecha_aprobacion + relativedelta(months=n)
         cuotas.append({
             "nrocuota": n,
+            "vencimiento": vencimiento.strftime("%Y-%m-%d"),
             "cuota": round(cuota, 2),
             "capital": round(capital, 2),
             "interes": round(interes, 2),
@@ -305,6 +313,7 @@ def generar_cronograma(db: Session, codsolicitud: str) -> dict:
 
     return {
         "codsolicitud": codsolicitud,
+        "fecha_aprobacion": fecha_aprobacion.strftime("%Y-%m-%d"),
         "monto": round(monto, 2),
         "plazo_meses": plazo,
         "tea": tea,
