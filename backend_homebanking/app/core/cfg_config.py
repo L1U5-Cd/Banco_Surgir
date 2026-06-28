@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 480
     PORT: int = 8002
+    CORS_ORIGINS: str = "https://homebanking-swart.vercel.app,http://localhost:5173"
 
     @property
     def cors_origins_list(self) -> list[str]:
