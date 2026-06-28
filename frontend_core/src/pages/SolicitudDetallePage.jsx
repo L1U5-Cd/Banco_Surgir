@@ -320,7 +320,7 @@ export default function SolicitudDetallePage() {
 function CronogramaSolicitud({ cuotas = [] }) {
   const filas = cuotas.map((c) => ({
     nrocuota: c.nrocuota,
-    fechavencimientopagocuota: '—',
+    fechavencimientopagocuota: c.vencimiento || '—',  // ← usa el campo del backend
     montocapitalprogramado: c.capital,
     montointeresprogramado: c.interes,
     montocuota: c.cuota,
