@@ -279,7 +279,7 @@ def generar_cronograma(db: Session, codsolicitud: str) -> dict:
     sol = repsol.obtener(db, codsolicitud)
     if not sol:
         return {"error": "Solicitud no encontrada"}
-    if sol.pksolicitudestado != repsol.ESTADO_APROBADO:
+    if sol.pksolicitudestado not in (repsol.ESTADO_APROBADO, repsol.ESTADO_DESEMBOLSADO):
         return {"error": "La solicitud no está aprobada", "estado": sol.dessolicitudestado}
 
     monto = float(sol.montoaprobadocredito or sol.montosolicitudcredito or 0)
